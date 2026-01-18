@@ -1,0 +1,601 @@
+{
+  "ir_version": "1.0",
+  "project": "schemago",
+  "repository": "https://github.com/grokify/schemago",
+
+  "legend": {
+    "completed": {"emoji": "✅", "description": "Completed"},
+    "in_progress": {"emoji": "🚧", "description": "In Progress"},
+    "planned": {"emoji": "📋", "description": "Planned"},
+    "future": {"emoji": "💡", "description": "Under Consideration"}
+  },
+
+  "areas": [
+    {"id": "parser", "name": "Parser", "priority": 1},
+    {"id": "ir", "name": "Intermediate Representation", "priority": 2},
+    {"id": "linter", "name": "Linter", "priority": 3},
+    {"id": "generator", "name": "Code Generator", "priority": 4},
+    {"id": "cli", "name": "CLI", "priority": 5},
+    {"id": "testing", "name": "Testing", "priority": 6},
+    {"id": "distribution", "name": "Distribution", "priority": 7}
+  ],
+
+  "phases": [
+    {
+      "id": "v0.1",
+      "name": "v0.1.0 - Foundation",
+      "status": "planned",
+      "order": 1,
+      "description": "Project structure, schema parsing, basic struct generation"
+    },
+    {
+      "id": "v0.2",
+      "name": "v0.2.0 - Union Types",
+      "status": "planned",
+      "order": 2,
+      "description": "Union detection, nullable handling, discriminator-based unmarshalling"
+    },
+    {
+      "id": "v0.3",
+      "name": "v0.3.0 - CLI & Config",
+      "status": "planned",
+      "order": 3,
+      "description": "CLI interface, configuration files, enum generation"
+    },
+    {
+      "id": "v0.4",
+      "name": "v0.4.0 - Agent Spec",
+      "status": "planned",
+      "order": 4,
+      "description": "Full Agent Spec compatibility, abstract types, validation"
+    },
+    {
+      "id": "v1.0",
+      "name": "v1.0.0 - Production Ready",
+      "status": "planned",
+      "order": 5,
+      "description": "Stable API, comprehensive documentation, production hardening"
+    },
+    {
+      "id": "future",
+      "name": "Future",
+      "status": "future",
+      "order": 99,
+      "description": "Ideas under consideration"
+    }
+  ],
+
+  "items": [
+    {
+      "id": "project-structure",
+      "title": "Project structure and CI setup",
+      "description": "Initialize Go module, directory structure, GitHub Actions CI",
+      "status": "planned",
+      "target_version": "0.1.0",
+      "phase": "v0.1",
+      "area": "distribution",
+      "type": "Added",
+      "priority": "high"
+    },
+    {
+      "id": "schema-parser",
+      "title": "JSON Schema parser integration",
+      "description": "Integrate google/jsonschema-go for schema parsing",
+      "status": "planned",
+      "target_version": "0.1.0",
+      "phase": "v0.1",
+      "area": "parser",
+      "type": "Added",
+      "priority": "high"
+    },
+    {
+      "id": "ref-resolver",
+      "title": "$ref resolution",
+      "description": "Resolve local and remote $ref references",
+      "status": "planned",
+      "target_version": "0.1.0",
+      "phase": "v0.1",
+      "area": "parser",
+      "type": "Added",
+      "priority": "high"
+    },
+    {
+      "id": "circular-refs",
+      "title": "Circular reference handling",
+      "description": "Detect and handle circular $ref chains without infinite loops",
+      "status": "planned",
+      "target_version": "0.1.0",
+      "phase": "v0.1",
+      "area": "parser",
+      "type": "Added",
+      "priority": "high"
+    },
+    {
+      "id": "ir-types",
+      "title": "Semantic IR type definitions",
+      "description": "Define TypeDef, Field, Variant, Discriminator, UnionKind types",
+      "status": "planned",
+      "target_version": "0.1.0",
+      "phase": "v0.1",
+      "area": "ir",
+      "type": "Added",
+      "priority": "high"
+    },
+    {
+      "id": "ir-builder",
+      "title": "Schema to IR builder",
+      "description": "Convert parsed JSON Schema to Semantic IR",
+      "status": "planned",
+      "target_version": "0.1.0",
+      "phase": "v0.1",
+      "area": "ir",
+      "type": "Added",
+      "priority": "high"
+    },
+    {
+      "id": "struct-gen",
+      "title": "Basic struct generation",
+      "description": "Generate Go structs for object types (no unions yet)",
+      "status": "planned",
+      "target_version": "0.1.0",
+      "phase": "v0.1",
+      "area": "generator",
+      "type": "Added",
+      "priority": "high"
+    },
+    {
+      "id": "json-tags",
+      "title": "JSON struct tags",
+      "description": "Generate correct json struct tags including omitempty",
+      "status": "planned",
+      "target_version": "0.1.0",
+      "phase": "v0.1",
+      "area": "generator",
+      "type": "Added",
+      "priority": "high"
+    },
+    {
+      "id": "union-detection",
+      "title": "Union detection algorithm",
+      "description": "Detect anyOf/oneOf patterns and classify union types",
+      "status": "planned",
+      "target_version": "0.2.0",
+      "phase": "v0.2",
+      "area": "ir",
+      "type": "Added",
+      "priority": "high"
+    },
+    {
+      "id": "nullable-handling",
+      "title": "Nullable field handling",
+      "description": "Convert anyOf [T, null] to pointer types",
+      "status": "planned",
+      "target_version": "0.2.0",
+      "phase": "v0.2",
+      "area": "ir",
+      "type": "Added",
+      "priority": "high"
+    },
+    {
+      "id": "discriminator-detection",
+      "title": "Discriminator detection",
+      "description": "Auto-detect discriminator fields from const properties",
+      "status": "planned",
+      "target_version": "0.2.0",
+      "phase": "v0.2",
+      "area": "ir",
+      "type": "Added",
+      "priority": "high"
+    },
+    {
+      "id": "reference-union-gen",
+      "title": "Reference union generation",
+      "description": "Generate ComponentReference | BaseXxx pattern",
+      "status": "planned",
+      "target_version": "0.2.0",
+      "phase": "v0.2",
+      "area": "generator",
+      "type": "Added",
+      "priority": "high"
+    },
+    {
+      "id": "polymorphic-union-gen",
+      "title": "Polymorphic union generation",
+      "description": "Generate discriminated union types with switch logic",
+      "status": "planned",
+      "target_version": "0.2.0",
+      "phase": "v0.2",
+      "area": "generator",
+      "type": "Added",
+      "priority": "high"
+    },
+    {
+      "id": "unmarshal-gen",
+      "title": "UnmarshalJSON generation",
+      "description": "Generate custom UnmarshalJSON for union types",
+      "status": "planned",
+      "target_version": "0.2.0",
+      "phase": "v0.2",
+      "area": "generator",
+      "type": "Added",
+      "priority": "high"
+    },
+    {
+      "id": "marshal-gen",
+      "title": "MarshalJSON generation",
+      "description": "Generate custom MarshalJSON for union types",
+      "status": "planned",
+      "target_version": "0.2.0",
+      "phase": "v0.2",
+      "area": "generator",
+      "type": "Added",
+      "priority": "high"
+    },
+    {
+      "id": "union-helpers",
+      "title": "Union helper methods",
+      "description": "Generate AsXxx() and IsXxx() helper methods for unions",
+      "status": "planned",
+      "target_version": "0.2.0",
+      "phase": "v0.2",
+      "area": "generator",
+      "type": "Added",
+      "priority": "medium"
+    },
+    {
+      "id": "cli-lint",
+      "title": "`schemago lint` command",
+      "description": "Lint JSON Schema for Go compatibility issues",
+      "status": "planned",
+      "target_version": "0.1.0",
+      "phase": "v0.1",
+      "area": "cli",
+      "type": "Added",
+      "priority": "high"
+    },
+    {
+      "id": "lint-union-no-discriminator",
+      "title": "Check: union without discriminator",
+      "description": "Error when anyOf/oneOf has no const discriminator field",
+      "status": "planned",
+      "target_version": "0.1.0",
+      "phase": "v0.1",
+      "area": "linter",
+      "type": "Added",
+      "priority": "high"
+    },
+    {
+      "id": "lint-inconsistent-discriminator",
+      "title": "Check: inconsistent discriminator",
+      "description": "Error when variants use different discriminator field names",
+      "status": "planned",
+      "target_version": "0.1.0",
+      "phase": "v0.1",
+      "area": "linter",
+      "type": "Added",
+      "priority": "high"
+    },
+    {
+      "id": "lint-missing-const",
+      "title": "Check: missing const in variant",
+      "description": "Error when union variant lacks const value for discriminator",
+      "status": "planned",
+      "target_version": "0.1.0",
+      "phase": "v0.1",
+      "area": "linter",
+      "type": "Added",
+      "priority": "high"
+    },
+    {
+      "id": "lint-large-union",
+      "title": "Check: large union warning",
+      "description": "Warning when union has more than 10 variants",
+      "status": "planned",
+      "target_version": "0.1.0",
+      "phase": "v0.1",
+      "area": "linter",
+      "type": "Added",
+      "priority": "medium"
+    },
+    {
+      "id": "lint-nested-union",
+      "title": "Check: deeply nested unions",
+      "description": "Warning when unions are nested more than 2 levels deep",
+      "status": "planned",
+      "target_version": "0.1.0",
+      "phase": "v0.1",
+      "area": "linter",
+      "type": "Added",
+      "priority": "medium"
+    },
+    {
+      "id": "lint-additional-props",
+      "title": "Check: additionalProperties on union",
+      "description": "Warning when additionalProperties: true may cause ambiguous decoding",
+      "status": "planned",
+      "target_version": "0.1.0",
+      "phase": "v0.1",
+      "area": "linter",
+      "type": "Added",
+      "priority": "medium"
+    },
+    {
+      "id": "lint-output-formats",
+      "title": "Multiple output formats for lint",
+      "description": "Support text, JSON, and GitHub Actions annotation format",
+      "status": "planned",
+      "target_version": "0.1.0",
+      "phase": "v0.1",
+      "area": "linter",
+      "type": "Added",
+      "priority": "medium"
+    },
+    {
+      "id": "cli-generate",
+      "title": "`schemago generate` command",
+      "description": "Main CLI command to generate Go code from schema",
+      "status": "planned",
+      "target_version": "0.3.0",
+      "phase": "v0.3",
+      "area": "cli",
+      "type": "Added",
+      "priority": "high"
+    },
+    {
+      "id": "cli-validate",
+      "title": "`schemago validate` command",
+      "description": "Validate schema and report unsupported patterns",
+      "status": "planned",
+      "target_version": "0.3.0",
+      "phase": "v0.3",
+      "area": "cli",
+      "type": "Added",
+      "priority": "medium"
+    },
+    {
+      "id": "cli-analyze",
+      "title": "`schemago analyze` command",
+      "description": "Show detected patterns (unions, enums, discriminators)",
+      "status": "planned",
+      "target_version": "0.3.0",
+      "phase": "v0.3",
+      "area": "cli",
+      "type": "Added",
+      "priority": "medium"
+    },
+    {
+      "id": "config-file",
+      "title": "Configuration file support",
+      "description": "YAML config file for generation options",
+      "status": "planned",
+      "target_version": "0.3.0",
+      "phase": "v0.3",
+      "area": "cli",
+      "type": "Added",
+      "priority": "medium"
+    },
+    {
+      "id": "enum-gen",
+      "title": "Enum type generation",
+      "description": "Generate typed consts for enum values",
+      "status": "planned",
+      "target_version": "0.3.0",
+      "phase": "v0.3",
+      "area": "generator",
+      "type": "Added",
+      "priority": "medium"
+    },
+    {
+      "id": "enum-validators",
+      "title": "Enum validation methods",
+      "description": "Generate IsValid() methods for enum types",
+      "status": "planned",
+      "target_version": "0.3.0",
+      "phase": "v0.3",
+      "area": "generator",
+      "type": "Added",
+      "priority": "low"
+    },
+    {
+      "id": "agentspec-compat",
+      "title": "Full Agent Spec compatibility",
+      "description": "Generate correct code for entire Agent Spec schema",
+      "status": "planned",
+      "target_version": "0.4.0",
+      "phase": "v0.4",
+      "area": "generator",
+      "type": "Added",
+      "priority": "high"
+    },
+    {
+      "id": "abstract-interfaces",
+      "title": "Abstract type interfaces",
+      "description": "Generate interfaces for x-abstract-component types",
+      "status": "planned",
+      "target_version": "0.4.0",
+      "phase": "v0.4",
+      "area": "generator",
+      "type": "Added",
+      "priority": "medium"
+    },
+    {
+      "id": "referenced-components",
+      "title": "ReferencedComponents map handling",
+      "description": "Handle polymorphic map with 40+ value types",
+      "status": "planned",
+      "target_version": "0.4.0",
+      "phase": "v0.4",
+      "area": "generator",
+      "type": "Added",
+      "priority": "high"
+    },
+    {
+      "id": "roundtrip-tests",
+      "title": "Round-trip JSON tests",
+      "description": "Verify JSON → Go → JSON produces identical output",
+      "status": "planned",
+      "target_version": "0.4.0",
+      "phase": "v0.4",
+      "area": "testing",
+      "type": "Added",
+      "priority": "high"
+    },
+    {
+      "id": "compile-tests",
+      "title": "Compile tests",
+      "description": "Verify all generated code compiles successfully",
+      "status": "planned",
+      "target_version": "0.4.0",
+      "phase": "v0.4",
+      "area": "testing",
+      "type": "Added",
+      "priority": "high"
+    },
+    {
+      "id": "lint-tests",
+      "title": "Lint tests",
+      "description": "Verify generated code passes golangci-lint",
+      "status": "planned",
+      "target_version": "0.4.0",
+      "phase": "v0.4",
+      "area": "testing",
+      "type": "Added",
+      "priority": "medium"
+    },
+    {
+      "id": "docs",
+      "title": "Comprehensive documentation",
+      "description": "README, examples, API documentation",
+      "status": "planned",
+      "target_version": "1.0.0",
+      "phase": "v1.0",
+      "area": "distribution",
+      "type": "Added",
+      "priority": "high"
+    },
+    {
+      "id": "goreleaser",
+      "title": "GoReleaser configuration",
+      "description": "Multi-platform binary releases",
+      "status": "planned",
+      "target_version": "1.0.0",
+      "phase": "v1.0",
+      "area": "distribution",
+      "type": "Added",
+      "priority": "high"
+    },
+    {
+      "id": "homebrew",
+      "title": "Homebrew tap",
+      "description": "Install via brew install grokify/tap/schemago",
+      "status": "planned",
+      "target_version": "1.0.0",
+      "phase": "v1.0",
+      "area": "distribution",
+      "type": "Added",
+      "priority": "medium"
+    },
+    {
+      "id": "go-generate",
+      "title": "go:generate support",
+      "description": "Support //go:generate schemago directive",
+      "status": "planned",
+      "target_version": "1.0.0",
+      "phase": "v1.0",
+      "area": "cli",
+      "type": "Added",
+      "priority": "medium"
+    },
+    {
+      "id": "openapi-wrapper",
+      "title": "OpenAPI 3.1 wrapper",
+      "description": "Tool to extract JSON Schema from OpenAPI and generate",
+      "status": "future",
+      "phase": "future",
+      "area": "cli",
+      "type": "Added",
+      "priority": "medium"
+    },
+    {
+      "id": "mcp-support",
+      "title": "MCP schema support",
+      "description": "Generate Go types for Model Context Protocol",
+      "status": "future",
+      "phase": "future",
+      "area": "generator",
+      "type": "Added",
+      "priority": "medium"
+    },
+    {
+      "id": "a2a-support",
+      "title": "A2A schema support",
+      "description": "Generate Go types for Agent-to-Agent protocol",
+      "status": "future",
+      "phase": "future",
+      "area": "generator",
+      "type": "Added",
+      "priority": "medium"
+    },
+    {
+      "id": "validation-gen",
+      "title": "Validation code generation",
+      "description": "Generate Validate() methods from schema constraints",
+      "status": "future",
+      "phase": "future",
+      "area": "generator",
+      "type": "Added",
+      "priority": "low"
+    },
+    {
+      "id": "typescript-output",
+      "title": "TypeScript output",
+      "description": "Add TypeScript as alternative output language",
+      "status": "future",
+      "phase": "future",
+      "area": "generator",
+      "type": "Added",
+      "priority": "low"
+    }
+  ],
+
+  "sections": [
+    {
+      "id": "overview",
+      "title": "Overview",
+      "order": 1,
+      "content": [
+        {"type": "text", "value": "**schemago** is a JSON Schema to Go code generator with first-class union type support. Unlike existing generators that degrade `anyOf`/`oneOf` to `interface{}`, schemago produces idiomatic Go code with proper tagged unions, discriminator-based unmarshalling, and nullable pointer types."}
+      ]
+    },
+    {
+      "id": "motivation",
+      "title": "Motivation",
+      "order": 2,
+      "content": [
+        {"type": "text", "value": "Modern API specifications like Oracle Agent Spec, MCP, and A2A use complex JSON Schema patterns including union types with discriminators. Existing Go generators cannot handle these correctly, producing code that loses type safety and requires manual type assertions everywhere."},
+        {"type": "text", "value": "schemago solves this by treating unions as first-class semantic constructs, generating proper tagged union types with custom marshal/unmarshal methods."}
+      ]
+    },
+    {
+      "id": "references",
+      "title": "References",
+      "order": 99,
+      "content": [
+        {"type": "list", "items": [
+          "[PRD.md](PRD.md) - Product requirements",
+          "[TRD.md](TRD.md) - Technical requirements",
+          "[Oracle Agent Spec](https://oracle.github.io/agent-spec/) - Primary target schema",
+          "[JSON Schema Draft 2020-12](https://json-schema.org/draft/2020-12/json-schema-core)"
+        ]}
+      ]
+    }
+  ],
+
+  "version_history": [
+    {"version": "0.1.0", "date": null, "status": "planned", "summary": "Foundation - parsing, IR, basic structs"},
+    {"version": "0.2.0", "date": null, "status": "planned", "summary": "Union types with discriminators"},
+    {"version": "0.3.0", "date": null, "status": "planned", "summary": "CLI and configuration"},
+    {"version": "0.4.0", "date": null, "status": "planned", "summary": "Full Agent Spec compatibility"},
+    {"version": "1.0.0", "date": null, "status": "planned", "summary": "Production ready release"}
+  ]
+}
