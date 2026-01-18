@@ -4,7 +4,7 @@
   "repository": "https://github.com/grokify/schemago",
   "releases": [
     {
-      "version": "0.1.0",
+      "version": "v0.1.0",
       "date": "2026-01-17",
       "description": "Initial release with JSON Schema linter for Go compatibility",
       "added": [
