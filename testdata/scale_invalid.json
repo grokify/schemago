@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/scale-invalid",
+  "title": "Schema with scale profile violations",
+  "type": "object",
+  "properties": {
+    "data": {
+      "description": "Uses anyOf - violates composition-disallowed",
+      "anyOf": [
+        {"type": "string"},
+        {"type": "number"}
+      ]
+    },
+    "value": {
+      "description": "Uses mixed type array - violates mixed-type-disallowed",
+      "type": ["string", "integer"]
+    },
+    "metadata": {
+      "description": "Missing type field - violates missing-type",
+      "properties": {
+        "key": {"type": "string"}
+      }
+    },
+    "extra": {
+      "type": "object",
+      "description": "Uses additionalProperties: true - violates additional-properties-disallowed",
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "Combined": {
+      "description": "Uses allOf - violates composition-disallowed",
+      "allOf": [
+        {"type": "object", "properties": {"a": {"type": "string"}}},
+        {"type": "object", "properties": {"b": {"type": "string"}}}
+      ]
+    },
+    "Either": {
+      "description": "Uses oneOf - violates composition-disallowed",
+      "oneOf": [
+        {"type": "object", "properties": {"type": {"const": "x"}}},
+        {"type": "object", "properties": {"type": {"const": "y"}}}
+      ]
+    }
+  }
+}

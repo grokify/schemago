@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/scale-valid",
+  "title": "Scale-compatible schema",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name"
+    },
+    "age": {
+      "type": "integer",
+      "description": "The age"
+    },
+    "email": {
+      "type": "string",
+      "description": "Email address"
+    },
+    "active": {
+      "type": "boolean",
+      "description": "Whether the user is active"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User tags"
+    },
+    "address": {
+      "$ref": "#/$defs/Address"
+    }
+  },
+  "required": ["name", "email"],
+  "additionalProperties": false,
+  "$defs": {
+    "Address": {
+      "type": "object",
+      "properties": {
+        "street": {"type": "string"},
+        "city": {"type": "string"},
+        "country": {"type": "string"}
+      },
+      "required": ["street", "city"],
+      "additionalProperties": false
+    }
+  }
+}

@@ -245,3 +245,250 @@ func TestResultCounts(t *testing.T) {
 		t.Error("Expected HasErrors to be true")
 	}
 }
+
+func TestScaleProfileDisallowsAnyOf(t *testing.T) {
+	schema := `{
+		"$defs": {
+			"Animal": {
+				"anyOf": [
+					{"type": "object", "properties": {"type": {"const": "dog"}}},
+					{"type": "object", "properties": {"type": {"const": "cat"}}}
+				]
+			}
+		}
+	}`
+
+	config := DefaultConfig()
+	config.Profile = ProfileScale
+	l := New(config)
+
+	result, err := l.Lint([]byte(schema))
+	if err != nil {
+		t.Fatalf("Failed to lint: %v", err)
+	}
+
+	found := false
+	for _, issue := range result.Issues {
+		if issue.Code == CodeCompositionDisallowed && issue.Severity == SeverityError {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Error("Expected composition-disallowed error for anyOf")
+	}
+}
+
+func TestScaleProfileDisallowsOneOf(t *testing.T) {
+	schema := `{
+		"$defs": {
+			"Animal": {
+				"oneOf": [
+					{"type": "object", "properties": {"type": {"const": "dog"}}},
+					{"type": "object", "properties": {"type": {"const": "cat"}}}
+				]
+			}
+		}
+	}`
+
+	config := DefaultConfig()
+	config.Profile = ProfileScale
+	l := New(config)
+
+	result, err := l.Lint([]byte(schema))
+	if err != nil {
+		t.Fatalf("Failed to lint: %v", err)
+	}
+
+	found := false
+	for _, issue := range result.Issues {
+		if issue.Code == CodeCompositionDisallowed && issue.Severity == SeverityError {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Error("Expected composition-disallowed error for oneOf")
+	}
+}
+
+func TestScaleProfileDisallowsAllOf(t *testing.T) {
+	schema := `{
+		"$defs": {
+			"Combined": {
+				"allOf": [
+					{"type": "object", "properties": {"name": {"type": "string"}}},
+					{"type": "object", "properties": {"age": {"type": "integer"}}}
+				]
+			}
+		}
+	}`
+
+	config := DefaultConfig()
+	config.Profile = ProfileScale
+	l := New(config)
+
+	result, err := l.Lint([]byte(schema))
+	if err != nil {
+		t.Fatalf("Failed to lint: %v", err)
+	}
+
+	found := false
+	for _, issue := range result.Issues {
+		if issue.Code == CodeCompositionDisallowed && issue.Severity == SeverityError {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Error("Expected composition-disallowed error for allOf")
+	}
+}
+
+func TestScaleProfileDisallowsAdditionalProperties(t *testing.T) {
+	schema := `{
+		"type": "object",
+		"properties": {
+			"name": {"type": "string"}
+		},
+		"additionalProperties": true
+	}`
+
+	config := DefaultConfig()
+	config.Profile = ProfileScale
+	l := New(config)
+
+	result, err := l.Lint([]byte(schema))
+	if err != nil {
+		t.Fatalf("Failed to lint: %v", err)
+	}
+
+	found := false
+	for _, issue := range result.Issues {
+		if issue.Code == CodeAdditionalPropsDisallowed && issue.Severity == SeverityError {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Error("Expected additional-properties-disallowed error")
+	}
+}
+
+func TestScaleProfileRequiresType(t *testing.T) {
+	schema := `{
+		"$defs": {
+			"Person": {
+				"properties": {
+					"name": {"type": "string"}
+				}
+			}
+		}
+	}`
+
+	config := DefaultConfig()
+	config.Profile = ProfileScale
+	l := New(config)
+
+	result, err := l.Lint([]byte(schema))
+	if err != nil {
+		t.Fatalf("Failed to lint: %v", err)
+	}
+
+	found := false
+	for _, issue := range result.Issues {
+		if issue.Code == CodeMissingType && issue.Severity == SeverityError {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Error("Expected missing-type error")
+	}
+}
+
+func TestScaleProfileDisallowsMixedTypes(t *testing.T) {
+	schema := `{
+		"$defs": {
+			"StringOrNumber": {
+				"type": ["string", "number"]
+			}
+		}
+	}`
+
+	config := DefaultConfig()
+	config.Profile = ProfileScale
+	l := New(config)
+
+	result, err := l.Lint([]byte(schema))
+	if err != nil {
+		t.Fatalf("Failed to lint: %v", err)
+	}
+
+	found := false
+	for _, issue := range result.Issues {
+		if issue.Code == CodeMixedTypeDisallowed && issue.Severity == SeverityError {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Error("Expected mixed-type-disallowed error")
+	}
+}
+
+func TestDefaultProfileAllowsComposition(t *testing.T) {
+	schema := `{
+		"$defs": {
+			"Animal": {
+				"anyOf": [
+					{
+						"type": "object",
+						"properties": {"type": {"const": "dog"}}
+					},
+					{
+						"type": "object",
+						"properties": {"type": {"const": "cat"}}
+					}
+				]
+			}
+		}
+	}`
+
+	l := NewWithDefaults()
+	result, err := l.Lint([]byte(schema))
+	if err != nil {
+		t.Fatalf("Failed to lint: %v", err)
+	}
+
+	for _, issue := range result.Issues {
+		if issue.Code == CodeCompositionDisallowed {
+			t.Error("Default profile should not report composition-disallowed")
+		}
+	}
+}
+
+func TestScaleProfileValidSchema(t *testing.T) {
+	schema := `{
+		"$schema": "https://json-schema.org/draft/2020-12/schema",
+		"type": "object",
+		"properties": {
+			"name": {"type": "string"},
+			"age": {"type": "integer"}
+		},
+		"additionalProperties": false
+	}`
+
+	config := DefaultConfig()
+	config.Profile = ProfileScale
+	l := New(config)
+
+	result, err := l.Lint([]byte(schema))
+	if err != nil {
+		t.Fatalf("Failed to lint: %v", err)
+	}
+
+	if result.HasErrors() {
+		t.Errorf("Expected no errors for valid scale profile schema, got: %v", result.Issues)
+	}
+}
