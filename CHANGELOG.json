@@ -18,7 +18,8 @@
         {"description": "Scale profile with `additional-properties-disallowed` rule: disallow `additionalProperties: true`", "commit": "c0fed40"},
         {"description": "Scale profile with `missing-type` rule: require explicit `type` field", "commit": "c0fed40"},
         {"description": "Scale profile with `mixed-type-disallowed` rule: disallow type arrays like `[\"string\", \"number\"]`", "commit": "c0fed40"},
-        {"description": "Goreleaser configuration for cross-platform builds and Homebrew tap", "commit": "b5d1fab"}
+        {"description": "Goreleaser configuration for cross-platform builds and Homebrew tap", "commit": "b5d1fab"},
+        {"description": "`--property-case` flag to enforce property naming conventions (e.g., camelCase, snake_case)", "commit": "73ed44f"}
       ],
       "documentation": [
         {"description": "README with scale profile docs and Homebrew installation", "commit": "3d4a088"},

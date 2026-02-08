@@ -67,6 +67,26 @@ schemalint lint schema.json                  # default profile
 schemalint lint schema.json -p scale         # strict scale profile
 ```
 
+### Property Case Convention
+
+Use `--property-case` to enforce a naming convention for object properties. The default is `camelCase`.
+
+```bash
+# Enforce snake_case
+schemalint lint schema.json --property-case snake_case
+
+# Disable case checking
+schemalint lint schema.json --property-case none
+```
+
+| Convention   | Description                 |
+|--------------|-----------------------------|
+| `none`       | No case validation          |
+| `camelCase`  | e.g., `myProperty` (default) |
+| `snake_case` | e.g., `my_property`          |
+| `kebab-case` | e.g., `my-property`          |
+| `PascalCase` | e.g., `MyProperty`           |
+
 ## What's Next
 
 Future releases will add:
