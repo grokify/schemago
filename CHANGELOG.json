@@ -22,7 +22,8 @@
       ],
       "documentation": [
         {"description": "README with scale profile docs and Homebrew installation", "commit": "3d4a088"},
-        {"description": "Release notes for v0.2.0", "commit": "3d4a088"}
+        {"description": "Release notes for v0.2.0", "commit": "3d4a088"},
+        {"description": "PRD, TRD, and ROADMAP updated for schemalint", "commit": "f7e418d"}
       ]
     },
     {
