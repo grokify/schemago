@@ -6,8 +6,20 @@ import (
 	"os"
 )
 
+// Profile represents a linting profile with predefined rules.
+type Profile string
+
+const (
+	// ProfileDefault is the standard linting profile.
+	ProfileDefault Profile = "default"
+	// ProfileScale is a strict profile for static type compatibility (jsonschema4scale).
+	ProfileScale Profile = "scale"
+)
+
 // Config holds linter configuration options.
 type Config struct {
+	// Profile is the linting profile to use.
+	Profile Profile
 	// MaxUnionVariants is the threshold for large union warnings (default: 10)
 	MaxUnionVariants int
 	// MaxUnionNestingDepth is the threshold for nested union warnings (default: 2)
@@ -19,10 +31,16 @@ type Config struct {
 // DefaultConfig returns the default linter configuration.
 func DefaultConfig() Config {
 	return Config{
+		Profile:              ProfileDefault,
 		MaxUnionVariants:     10,
 		MaxUnionNestingDepth: 2,
 		DiscriminatorFields:  []string{"component_type", "type", "kind"},
 	}
+}
+
+// IsScaleProfile returns true if the scale profile is active.
+func (c Config) IsScaleProfile() bool {
+	return c.Profile == ProfileScale
 }
 
 // Linter checks JSON Schemas for Go compatibility issues.
@@ -89,6 +107,11 @@ func (l *Linter) lintSchema(schema *Schema, path string, result *Result, unionDe
 		return
 	}
 
+	// Scale profile: strict checks for static type compatibility
+	if l.config.IsScaleProfile() {
+		l.lintScaleProfile(schema, path, result)
+	}
+
 	// Check for union types
 	if len(schema.AnyOf) > 0 {
 		l.lintUnion(schema.AnyOf, path+"/anyOf", result, unionDepth, "anyOf")
@@ -111,6 +134,74 @@ func (l *Linter) lintSchema(schema *Schema, path string, result *Result, unionDe
 	// Check additionalProperties
 	if schema.AdditionalPropertiesSchema != nil {
 		l.lintSchema(schema.AdditionalPropertiesSchema, path+"/additionalProperties", result, unionDepth)
+	}
+}
+
+// lintScaleProfile applies strict checks for the scale profile.
+func (l *Linter) lintScaleProfile(schema *Schema, path string, result *Result) {
+	// Disallow composition keywords (anyOf, oneOf, allOf)
+	if len(schema.AnyOf) > 0 {
+		result.Issues = append(result.Issues, Issue{
+			Code:       CodeCompositionDisallowed,
+			Severity:   SeverityError,
+			Path:       path + "/anyOf",
+			Message:    "anyOf is disallowed in scale profile",
+			Suggestion: "Use separate schema definitions instead of unions",
+		})
+	}
+	if len(schema.OneOf) > 0 {
+		result.Issues = append(result.Issues, Issue{
+			Code:       CodeCompositionDisallowed,
+			Severity:   SeverityError,
+			Path:       path + "/oneOf",
+			Message:    "oneOf is disallowed in scale profile",
+			Suggestion: "Use separate schema definitions instead of unions",
+		})
+	}
+	if len(schema.AllOf) > 0 {
+		result.Issues = append(result.Issues, Issue{
+			Code:       CodeCompositionDisallowed,
+			Severity:   SeverityError,
+			Path:       path + "/allOf",
+			Message:    "allOf is disallowed in scale profile",
+			Suggestion: "Flatten the schema structure instead of using composition",
+		})
+	}
+
+	// Disallow additionalProperties: true
+	if schema.AdditionalProperties != nil && *schema.AdditionalProperties {
+		result.Issues = append(result.Issues, Issue{
+			Code:       CodeAdditionalPropsDisallowed,
+			Severity:   SeverityError,
+			Path:       path,
+			Message:    "additionalProperties: true is disallowed in scale profile",
+			Suggestion: "Set additionalProperties: false or remove it to ensure strict type mapping",
+		})
+	}
+
+	// Require explicit type (unless it's a $ref or boolean schema or container)
+	if !schema.HasType() && !schema.IsRef() && !schema.IsBooleanSchema {
+		// Only report if this is a meaningful schema (has properties, items, etc.)
+		if len(schema.Properties) > 0 || schema.Items != nil || schema.Const != nil || len(schema.Enum) > 0 {
+			result.Issues = append(result.Issues, Issue{
+				Code:       CodeMissingType,
+				Severity:   SeverityError,
+				Path:       path,
+				Message:    "missing explicit type field in scale profile",
+				Suggestion: "Add a 'type' field to specify the schema type",
+			})
+		}
+	}
+
+	// Disallow mixed types (type arrays like ["string", "number"])
+	if schema.HasMixedType() {
+		result.Issues = append(result.Issues, Issue{
+			Code:       CodeMixedTypeDisallowed,
+			Severity:   SeverityError,
+			Path:       path,
+			Message:    fmt.Sprintf("mixed type array %v is disallowed in scale profile", schema.TypeList),
+			Suggestion: "Use a single type; for nullable types, use a separate null check",
+		})
 	}
 }
 

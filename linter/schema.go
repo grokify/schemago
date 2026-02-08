@@ -15,7 +15,8 @@ type Schema struct {
 	Definitions map[string]*Schema `json:"definitions,omitempty"`
 
 	// Type
-	Type string `json:"type,omitempty"`
+	Type     string   `json:"-"` // Handled specially for type arrays
+	TypeList []string `json:"-"` // For mixed types like ["string", "null"]
 
 	// Composition
 	AnyOf []*Schema `json:"anyOf,omitempty"`
@@ -23,7 +24,7 @@ type Schema struct {
 	AllOf []*Schema `json:"allOf,omitempty"`
 
 	// Object
-	Properties                 map[string]*Schema `json:"properties,omitempty"`
+	Properties                 map[string]*Schema `json:"-"` // Handled specially for boolean schemas
 	Required                   []string           `json:"required,omitempty"`
 	AdditionalProperties       *bool              `json:"-"` // Handled specially
 	AdditionalPropertiesSchema *Schema            `json:"-"` // Handled specially
@@ -42,10 +43,23 @@ type Schema struct {
 
 	// Extension
 	XAbstractComponent *bool `json:"x-abstract-component,omitempty"`
+
+	// BooleanSchema is true if this schema is a boolean schema (true = accept all, false = reject all).
+	// When IsBooleanSchema is true, BooleanValue holds the value.
+	IsBooleanSchema bool `json:"-"`
+	BooleanValue    bool `json:"-"`
 }
 
-// UnmarshalJSON implements custom unmarshalling to handle additionalProperties.
+// UnmarshalJSON implements custom unmarshalling to handle boolean schemas and additionalProperties.
 func (s *Schema) UnmarshalJSON(data []byte) error {
+	// First, check if the entire schema is a boolean (true or false)
+	var boolSchema bool
+	if err := json.Unmarshal(data, &boolSchema); err == nil {
+		s.IsBooleanSchema = true
+		s.BooleanValue = boolSchema
+		return nil
+	}
+
 	// Use an alias to avoid infinite recursion
 	type schemaAlias Schema
 	var alias schemaAlias
@@ -56,12 +70,48 @@ func (s *Schema) UnmarshalJSON(data []byte) error {
 
 	*s = Schema(alias)
 
-	// Handle additionalProperties which can be bool or schema
+	// Handle properties, additionalProperties, and type which can be string or array
 	var raw map[string]json.RawMessage
 	if err := json.Unmarshal(data, &raw); err != nil {
 		return err
 	}
 
+	// Handle type which can be a string or an array of strings
+	if typeRaw, ok := raw["type"]; ok {
+		// Try as string first
+		var strVal string
+		if err := json.Unmarshal(typeRaw, &strVal); err == nil {
+			s.Type = strVal
+		} else {
+			// Try as array of strings
+			var arrVal []string
+			if err := json.Unmarshal(typeRaw, &arrVal); err == nil {
+				s.TypeList = arrVal
+				if len(arrVal) == 1 {
+					s.Type = arrVal[0]
+				}
+			}
+		}
+	}
+
+	// Handle properties - each property can be a bool or schema
+	if propsRaw, ok := raw["properties"]; ok {
+		var propsMap map[string]json.RawMessage
+		if err := json.Unmarshal(propsRaw, &propsMap); err != nil {
+			return err
+		}
+
+		s.Properties = make(map[string]*Schema)
+		for propName, propRaw := range propsMap {
+			propSchema := &Schema{}
+			if err := json.Unmarshal(propRaw, propSchema); err != nil {
+				return err
+			}
+			s.Properties[propName] = propSchema
+		}
+	}
+
+	// Handle additionalProperties which can be bool or schema
 	if apRaw, ok := raw["additionalProperties"]; ok {
 		// Try as bool first
 		var boolVal bool
@@ -108,4 +158,14 @@ func (s *Schema) GetUnionVariants() []*Schema {
 		return s.AnyOf
 	}
 	return s.OneOf
+}
+
+// HasMixedType returns true if this schema has a type array with multiple types.
+func (s *Schema) HasMixedType() bool {
+	return len(s.TypeList) > 1
+}
+
+// HasType returns true if the schema has an explicit type field.
+func (s *Schema) HasType() bool {
+	return s.Type != "" || len(s.TypeList) > 0
 }

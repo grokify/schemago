@@ -32,6 +32,12 @@ const (
 	CodeAdditionalProps   IssueCode = "additional-properties"
 	CodeAmbiguousUnion    IssueCode = "ambiguous-union"
 	CodeCircularReference IssueCode = "circular-reference"
+
+	// Scale profile errors - strict rules for static type compatibility
+	CodeCompositionDisallowed     IssueCode = "composition-disallowed"
+	CodeAdditionalPropsDisallowed IssueCode = "additional-properties-disallowed"
+	CodeMissingType               IssueCode = "missing-type"
+	CodeMixedTypeDisallowed       IssueCode = "mixed-type-disallowed"
 )
 
 // Issue represents a single lint issue found in a schema.
