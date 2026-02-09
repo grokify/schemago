@@ -1,16 +1,38 @@
 {
-  "ir_version": "1.0",
+  "irVersion": "1.0",
   "project": "schemalint",
   "repository": "https://github.com/grokify/schemalint",
+  "versioning": "semver",
+  "commitConvention": "conventional",
+  "maintainers": ["grokify"],
   "releases": [
+    {
+      "version": "v0.3.0",
+      "date": "2026-02-09",
+      "highlights": [
+        {"description": "Generate JSON Schema from Go struct types using invopop/jsonschema"}
+      ],
+      "added": [
+        {"description": "`schemalint generate` command to generate JSON Schema from Go struct types", "commit": "1148f63"},
+        {"description": "Support for both local (GOPATH/src) and remote Go modules in schema generation", "commit": "1148f63"},
+        {"description": "GitHub Actions release workflow for GoReleaser", "commit": "44a4252"}
+      ],
+      "changed": [
+        {"description": "Rename ROADMAP.json/md to TASKS.json/md", "commit": "1148f63"}
+      ],
+      "fixed": [
+        {"description": "Fix .gitignore pattern to not exclude cmd/schemalint/ files", "commit": "1148f63"}
+      ]
+    },
     {
       "version": "v0.2.0",
       "date": "2026-02-08",
-      "description": "Rename to schemalint and add scale profile for strict static type compatibility",
-      "changed": [
-        {"description": "**BREAKING**: Rename binary from `schemago` to `schemalint`", "commit": "a96efd5"},
-        {"description": "**BREAKING**: Rename module from `github.com/grokify/schemago` to `github.com/grokify/schemalint`", "commit": "a96efd5"},
-        {"description": "Update CLI description to emphasize static type compatibility for all languages (Go, Rust, TypeScript, etc.)", "commit": "a96efd5"}
+      "highlights": [
+        {"description": "Rename to schemalint and add scale profile for strict static type compatibility"}
+      ],
+      "breaking": [
+        {"description": "Rename binary from `schemago` to `schemalint`", "commit": "a96efd5"},
+        {"description": "Rename module from `github.com/grokify/schemago` to `github.com/grokify/schemalint`", "commit": "a96efd5"}
       ],
       "added": [
         {"description": "`--profile` / `-p` flag to select linting profile (`default`, `scale`)", "commit": "c0fed40"},
@@ -21,6 +43,9 @@
         {"description": "Goreleaser configuration for cross-platform builds and Homebrew tap", "commit": "b5d1fab"},
         {"description": "`--property-case` flag to enforce property naming conventions (e.g., camelCase, snake_case)", "commit": "73ed44f"}
       ],
+      "changed": [
+        {"description": "Update CLI description to emphasize static type compatibility for all languages (Go, Rust, TypeScript, etc.)", "commit": "a96efd5"}
+      ],
       "documentation": [
         {"description": "README with scale profile docs and Homebrew installation", "commit": "3d4a088"},
         {"description": "Release notes for v0.2.0", "commit": "3d4a088"},
@@ -30,7 +55,9 @@
     {
       "version": "v0.1.0",
       "date": "2026-01-17",
-      "description": "Initial release with JSON Schema linter for Go compatibility",
+      "highlights": [
+        {"description": "Initial release with JSON Schema linter for Go compatibility"}
+      ],
       "added": [
         {"description": "CLI with `lint` and `version` commands using cobra", "commit": "f8ed488"},
         {"description": "JSON Schema parser for linting (supports `$defs`, `definitions`, `anyOf`, `oneOf`)", "commit": "f8ed488"},
