@@ -1,4 +1,4 @@
-schemalint
+/schemalint
 testdata/property_case_camel_invalid.json
 testdata/property_case_camel_valid.json
 testdata/property_case_kebab_invalid.json

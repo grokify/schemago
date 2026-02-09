@@ -21,11 +21,13 @@ func main() {
 
 var rootCmd = &cobra.Command{
 	Use:   "schemalint",
-	Short: "JSON Schema linter for static type compatibility",
-	Long: `schemalint validates JSON Schema files for compatibility with
-statically-typed languages like Go, Rust, TypeScript, and others.
+	Short: "JSON Schema linter and generator for static type compatibility",
+	Long: `schemalint validates and generates JSON Schema files for compatibility
+with statically-typed languages like Go, Rust, TypeScript, and others.
 
-Use 'schemalint lint' to check schemas for type compatibility issues.
+Commands:
+  lint      - Check schemas for type compatibility issues
+  generate  - Generate JSON Schema from Go struct types
 
 Profiles:
   default  - Check for common issues (discriminators, large unions)
