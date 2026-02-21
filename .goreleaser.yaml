@@ -70,21 +70,3 @@ release:
   draft: false
   prerelease: auto
   name_template: "v{{.Version}}"
-
-brews:
-  - name: schemalint
-    repository:
-      owner: grokify
-      name: homebrew-tap
-      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
-    directory: Formula
-    homepage: "https://github.com/grokify/schemalint"
-    description: "JSON Schema linter and generator for static type compatibility"
-    license: "MIT"
-    install: |
-      bin.install "schemalint"
-    test: |
-      system "#{bin}/schemalint", "version"
-    commit_author:
-      name: goreleaserbot
-      email: bot@goreleaser.com
