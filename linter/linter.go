@@ -352,7 +352,7 @@ func (l *Linter) lintNavigableProfile(schema *Schema, path string, result *Resul
 	}
 
 	// Check array nesting (arrays containing arrays of objects)
-	if l.isArrayOfArraysOfObjects(schema, path) {
+	if l.isArrayOfArraysOfObjects(schema) {
 		result.Issues = append(result.Issues, Issue{
 			Code:       CodeDeepArrayNesting,
 			Severity:   SeverityWarning,
@@ -407,7 +407,7 @@ func splitPath(path string) []string {
 }
 
 // isArrayOfArraysOfObjects checks if a schema is an array containing arrays of objects.
-func (l *Linter) isArrayOfArraysOfObjects(schema *Schema, path string) bool {
+func (l *Linter) isArrayOfArraysOfObjects(schema *Schema) bool {
 	if schema.Type != "array" || schema.Items == nil {
 		return false
 	}
