@@ -10,8 +10,6 @@ import (
 	"github.com/grokify/schemakit/linter"
 )
 
-var version = "dev"
-
 func main() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -69,6 +67,8 @@ var (
 )
 
 func init() {
+	rootCmd.Version = versionString()
+	rootCmd.SetVersionTemplate("{{.Version}}\n")
 	rootCmd.AddCommand(lintCmd)
 	rootCmd.AddCommand(versionCmd)
 
@@ -140,6 +140,6 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print version information",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("schemakit version %s\n", version)
+		fmt.Println(versionString())
 	},
 }
