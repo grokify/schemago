@@ -7,6 +7,34 @@
   "maintainers": ["grokify"],
   "releases": [
     {
+      "version": "v0.5.0",
+      "date": "2026-08-23",
+      "commit": "5084c92",
+      "highlights": [
+        {"description": "Navigable profile for human-reviewable, AI-authored schemas (flat structure, shallow references, ID fields)"},
+        {"description": "`generate --check` drift guard to keep committed schemas in sync with their Go structs in CI"}
+      ],
+      "added": [
+        {"description": "`navigable` lint profile enforcing flat structure and local comprehensibility: `deep-nesting` (error), `deep-array-nesting` (warning), `missing-id-field` (warning)", "commit": "d951be7"},
+        {"description": "`generate --check` flag that regenerates the schema in memory and fails on drift against the committed `-o` file, without rewriting it", "commit": "d7ca541"}
+      ],
+      "documentation": [
+        {"description": "Navigable profile reference and examples", "commit": "742a733"},
+        {"description": "Update README badges/shields", "commit": "639ae95"}
+      ],
+      "tests": [
+        {"description": "Tests for the navigable profile checks", "commit": "b4c5556"}
+      ],
+      "internal": [
+        {"description": "Drop unused `path` parameter from `isArrayOfArraysOfObjects` (unparam)", "commit": "5084c92"},
+        {"description": "`gofmt` formatting fix", "commit": "79aabec"}
+      ],
+      "dependencies": [
+        {"description": "Bump `actions/checkout` from 6 to 7", "commit": "b5b60b0"},
+        {"description": "Bump `actions/setup-go` from 6 to 7", "commit": "26200f5"}
+      ]
+    },
+    {
       "version": "v0.4.0",
       "date": "2026-04-18",
       "highlights": [
