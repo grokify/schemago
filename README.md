@@ -67,9 +67,14 @@ Generate a JSON Schema from Go struct types:
 ```bash
 schemakit generate github.com/myorg/myproject/types Config
 schemakit generate -o schema.json github.com/myorg/myproject/types Config
+
+# CI drift guard: fail if the committed schema is out of sync with the Go structs
+schemakit generate -o schema.json --check github.com/myorg/myproject/types Config
 ```
 
 This creates a temporary Go program that uses [invopop/jsonschema](https://github.com/invopop/jsonschema) to reflect on your type and generate the schema. The target package can be local (in GOPATH/src) or remote.
+
+Use `--check` (requires `-o`) to verify that a committed schema still matches its Go structs without rewriting it — it exits non-zero on drift. Pair it with a `//go:generate schemakit generate ...` directive so `go generate ./...` refreshes the schema and CI catches drift.
 
 ### Generate Documentation from Go Types
 

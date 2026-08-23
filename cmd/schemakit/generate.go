@@ -15,6 +15,7 @@ import (
 var (
 	genOutput string
 	genIndent bool
+	genCheck  bool
 )
 
 func init() {
@@ -22,6 +23,7 @@ func init() {
 
 	generateCmd.Flags().StringVarP(&genOutput, "output", "o", "", "Output file (default: stdout)")
 	generateCmd.Flags().BoolVar(&genIndent, "indent", true, "Indent JSON output")
+	generateCmd.Flags().BoolVar(&genCheck, "check", false, "Verify the committed -o file matches freshly generated output; exit non-zero on drift (no write)")
 }
 
 var generateCmd = &cobra.Command{
@@ -42,10 +44,14 @@ Examples:
   # Generate without indentation
   schemakit generate --indent=false github.com/myorg/myproject/types Config
 
+  # Fail if the committed schema is out of sync with the Go structs (CI drift guard)
+  schemakit generate -o schema.json --check github.com/myorg/myproject/types Config
+
 Notes:
   - The package must be importable (available locally or via go get)
   - The type must be exported (start with uppercase)
-  - Uses struct tags: json, jsonschema, title, description, etc.`,
+  - Uses struct tags: json, jsonschema, title, description, etc.
+  - --check requires -o and does not modify the file; it exits 1 on drift`,
 	Args: cobra.ExactArgs(2),
 	RunE: runGenerate,
 }
@@ -89,6 +95,11 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 	// Validate type name starts with uppercase (exported)
 	if len(typeName) == 0 || typeName[0] < 'A' || typeName[0] > 'Z' {
 		return fmt.Errorf("type name must be exported (start with uppercase): %s", typeName)
+	}
+
+	// --check compares against a committed file, so an output path is required.
+	if genCheck && genOutput == "" {
+		return fmt.Errorf("--check requires -o/--output to specify the file to verify against")
 	}
 
 	// Find the module root and module name
@@ -180,6 +191,12 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 
 	// Output result
 	output := strings.TrimSpace(stdout.String())
+
+	// --check verifies the committed file matches without writing.
+	if genCheck {
+		return checkSchemaDrift(cmd, genOutput, output)
+	}
+
 	if genOutput != "" {
 		if err := os.WriteFile(genOutput, []byte(output+"\n"), 0600); err != nil {
 			return fmt.Errorf("failed to write output file: %w", err)
@@ -190,6 +207,27 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 	}
 
 	return nil
+}
+
+// checkSchemaDrift compares freshly generated schema output against the
+// committed file at path. It returns a non-nil error (drift or read failure)
+// so the command exits non-zero, or nil when they match. Comparison ignores
+// trailing whitespace so it is insensitive to a final newline.
+func checkSchemaDrift(cmd *cobra.Command, path, generated string) error {
+	existing, err := os.ReadFile(path) //nolint:gosec // G304: path is a CLI-provided output file
+	if err != nil {
+		if os.IsNotExist(err) {
+			return fmt.Errorf("schema drift: %s does not exist; run without --check to generate it", path)
+		}
+		return fmt.Errorf("failed to read %s: %w", path, err)
+	}
+
+	if strings.TrimSpace(string(existing)) == generated {
+		fmt.Fprintf(cmd.ErrOrStderr(), "%s is up to date\n", path)
+		return nil
+	}
+
+	return fmt.Errorf("schema drift: %s is out of sync with the Go structs; regenerate with `schemakit generate -o %s ...`", path, path)
 }
 
 // findModule finds the module root directory and module name for a package path.
