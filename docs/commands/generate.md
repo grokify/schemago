@@ -14,6 +14,7 @@ schemakit generate <package> <type> [flags]
 |------|-------------|
 | `-o, --output` | Output file (default: stdout) |
 | `--indent` | Indent JSON output (default: true) |
+| `--check` | Verify the committed `-o` file matches freshly generated output; exit non-zero on drift (no write). Requires `-o`. |
 
 ## Examples
 
@@ -26,6 +27,26 @@ schemakit generate -o schema.json github.com/myorg/myproject/types Config
 
 # Without indentation
 schemakit generate --indent=false github.com/myorg/myproject/types Config
+
+# CI drift guard: fail if the committed schema is out of sync with the Go structs
+schemakit generate -o schema.json --check github.com/myorg/myproject/types Config
+```
+
+## Drift Guard (`--check`)
+
+`--check` regenerates the schema in memory and compares it to the committed
+file at `-o`, exiting non-zero on any difference without rewriting the file.
+This keeps a committed schema honest against its Go source of truth. Pair it
+with a `//go:generate` directive so `go generate ./...` refreshes the schema
+and CI enforces it:
+
+```go
+//go:generate schemakit generate -o schema.json github.com/myorg/myproject/types Config
+```
+
+```bash
+# In CI
+schemakit generate -o schema.json --check github.com/myorg/myproject/types Config
 ```
 
 ## How It Works

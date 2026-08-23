@@ -39,6 +39,18 @@ The scale profile includes all default checks plus these additional errors:
 | `missing-type` | Missing Type | Require explicit `type` field |
 | `mixed-type-disallowed` | Mixed Type Disallowed | Disallow type arrays like `["string", "number"]` |
 
+## Navigable Profile
+
+The navigable profile enforces flat, locally-comprehensible schemas for human
+review and AI authoring. See [Profiles](profiles.md#navigable-profile) for the
+full rationale.
+
+| Code | Name | Severity | Description |
+|------|------|----------|-------------|
+| `deep-nesting` | Deep Nesting | Error | Object nesting exceeds 2 levels |
+| `deep-array-nesting` | Deep Array Nesting | Warning | Arrays of arrays of objects reduce navigability |
+| `missing-id-field` | Missing ID Field | Warning | Array items lack an ID field for cross-referencing |
+
 ## Examples
 
 ### union-no-discriminator
